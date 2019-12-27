@@ -26,7 +26,7 @@ def heuristic(state: GameState, player_index: int) -> float:
     distance_from_closest_walls = min(state.board_size[0]-head_position[0],head_position[0]) \
                                   + min(state.board_size[1]-head_position[1],head_position[1])
 
-    distance_from_closest_fruit = min([dist_manhattan(fruit,head_position) for fruit in state.fruits_locations])
+    distance_from_closest_fruit = min([dist_manhattan(fruit, head_position) for fruit in state.fruits_locations])
 
     closest_rival_snake = state.board_size[0]+state.board_size[1]
 
@@ -83,38 +83,63 @@ class MinimaxAgent(Player):
 
     # aux functions
 
-    def RB_minimax(self, state: TurnBasedGameState, depth):
+    def RB_minimax(self, state: TurnBasedGameState, depth, isAlphaBeta=False, alpha=-np.inf, beta=np.inf):
         # stop conditions - if we reached a final state (#turns or snake dead) or reached final depth
         if depth == 0:
-            return heuristic(state.game_state, self.player_index)
+            return heuristic(state.game_state, self.player_index), state.agent_action
+
         if state.game_state.is_terminal_state:
             if state.game_state.current_winner.player_index == self.player_index:
-                return np.inf
+                return np.inf, state.agent_action
             else:
-                return -np.inf
+                return -np.inf, state.agent_action
+
         # players turn
         if state.turn == self.Turn.AGENT_TURN:
             curr_max = -np.inf
+            curr_move = (curr_max, GameAction.LEFT)
             for succ in state.game_state.get_possible_actions():
                 assert succ is not None
                 next_state = self.TurnBasedGameState(state.game_state, succ)
-                tmp = self.RB_minimax(next_state, depth)
-                curr_max = max(tmp, curr_max)
-            return curr_max
+                tmp_sum, tmp_move = self.RB_minimax(next_state, depth, isAlphaBeta, alpha, beta)
+
+                if curr_max < tmp_sum:
+                    curr_max = tmp_sum
+                    curr_move = (tmp_sum, succ)
+
+                # curr_max = max(tmp, curr_max)
+
+                if isAlphaBeta:                     # check if calculates an alpha-beta algorithm
+                    alpha = max(alpha, curr_max)
+                    if curr_max >= beta:
+                        return np.inf, succ    # curr_move in this case is irrelevant
+            return curr_move
 
         # opponents turn
         else:
             curr_min = np.inf
+            curr_move = (curr_min, GameAction.LEFT)
             # iterate over all possible actions of opponents
             for succ in state.game_state.get_possible_actions_dicts_given_action(state.agent_action, self.player_index):
                 succ[self.player_index] = state.agent_action
                 next_state = self.TurnBasedGameState(get_next_state(state.game_state, succ), None)
-                tmp = self.RB_minimax(next_state, depth-1)
-                curr_min = min(tmp, curr_min)
-            return curr_min
+                tmp_sum, tmp_move = self.RB_minimax(next_state, depth-1, isAlphaBeta, alpha, beta)
+
+                if curr_min > tmp_sum:
+                    curr_min = tmp_sum
+                    curr_move = (tmp_sum, state.agent_action)
+
+                # curr_min = min(tmp, curr_min)
+
+                if isAlphaBeta:                             # check if calculates an alpha-beta algorithm
+                    beta = min(curr_min, beta)
+                    if curr_min <= alpha:
+                        return -np.inf, state.agent_action  # curr_move in this case is irrelevant
+            return curr_move
 
     def get_action(self, state: GameState) -> GameAction:
         # check all 3 possible moves of the player
+        '''
         left = MinimaxAgent.TurnBasedGameState(state, GameAction.LEFT)
         res_left = self.RB_minimax(left,2)
         straight = MinimaxAgent.TurnBasedGameState(state, GameAction.STRAIGHT)
@@ -129,12 +154,28 @@ class MinimaxAgent(Player):
             return GameAction.STRAIGHT
         else:
             return GameAction.RIGHT
-        pass
+
+            '''
+        depth = 2
+        start_state = MinimaxAgent.TurnBasedGameState(state, None)
+        result_sum, result_action = self.RB_minimax(start_state, depth)
+        assert result_action is not None
+        return result_action
 
 
 class AlphaBetaAgent(MinimaxAgent):
     def get_action(self, state: GameState) -> GameAction:
         # Insert your code here...
+        depth = 2
+        start_state = MinimaxAgent.TurnBasedGameState(state, None)
+        result_sum, result_action = self.RB_minimax(start_state, depth, True)
+        if type(result_action) is not GameAction:
+            print(type(result_action))
+        return result_action
+
+
+
+
         pass
 
 
