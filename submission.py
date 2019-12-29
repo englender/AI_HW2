@@ -174,6 +174,16 @@ class AlphaBetaAgent(MinimaxAgent):
         return result_action
 
 
+def init_list_of_states():
+    init_state = []
+    for i in range(50):
+        if i % 2 == 0:
+            init_state.append(GameAction.LEFT)
+        else: init_state.append(GameAction.RIGHT)
+
+    return init_state
+
+
 def SAHC_sideways():
     """
     Implement Steepest Ascent Hill Climbing with Sideways Steps Here.
@@ -187,7 +197,26 @@ def SAHC_sideways():
     3) print the best moves vector you found.
     :return:
     """
-    pass
+    n = 50
+    current = init_list_of_states()
+
+    for i in range(n):
+        best_val = -np.inf
+        best_states = []
+        for op in GameAction:                       # checks every option of {L,R,S}
+            new_state = current.copy()
+            new_state[i] = op
+            new_val = get_fitness(new_state)
+            if new_val > best_val:                  # case of an uphill
+                best_val = new_val
+                best_states = [new_state]
+            elif new_val == best_val:               # case of a sideways
+                best_states.append(new_state)
+        if best_val > get_fitness(current):
+            rand_ans = np.random.choice(range(len(best_states)))
+            current[i] = (best_states[rand_ans])[i]
+
+    return current
 
 
 def local_search():
