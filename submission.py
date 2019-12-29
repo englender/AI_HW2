@@ -86,7 +86,7 @@ class MinimaxAgent(Player):
     def RB_minimax(self, state: TurnBasedGameState, depth, isAlphaBeta=False, alpha=-np.inf, beta=np.inf):
         # stop conditions - if we reached a final state (#turns or snake dead) or reached final depth
         if depth == 0:
-            return heuristic(state.game_state, self.player_index), state.agent_action
+            return heuristic(state.game_state, self.player_index), state.agent_action   # TODO: check what to return on depth = 0
 
         if state.game_state.is_terminal_state:
             if state.game_state.current_winner.player_index == self.player_index:
@@ -172,11 +172,6 @@ class AlphaBetaAgent(MinimaxAgent):
         if type(result_action) is not GameAction:
             print(type(result_action))
         return result_action
-
-
-
-
-        pass
 
 
 def SAHC_sideways():
