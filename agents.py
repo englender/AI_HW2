@@ -1,7 +1,7 @@
 import keyboard
 import numpy as np
 from environment import Player, GameAction, GameState, get_next_state
-
+import time
 
 class KeyboardPlayer(Player):
     KEY_PRESSED = GameAction.STRAIGHT

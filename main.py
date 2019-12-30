@@ -3,6 +3,7 @@ from agents import RandomPlayer, KeyboardPlayer, GreedyAgent, BetterGreedyAgent
 from submission import MinimaxAgent, AlphaBetaAgent, TournamentAgent
 from optparse import OptionParser
 import sys
+from submission import times
 
 
 def start_demo_game(n_agents: int, game_duration: int, board_width: int, board_height: int,
@@ -176,3 +177,4 @@ def get_user_command(argv):
     
 if __name__ == '__main__':
     get_user_command(sys.argv[1:])
+    print(sum(times)/len(times))

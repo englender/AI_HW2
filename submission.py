@@ -2,7 +2,9 @@ from environment import Player, GameState, GameAction, get_next_state
 from utils import get_fitness
 import numpy as np
 from enum import Enum
+import time
 
+times = []
 
 def dist_manhattan(pos1 : tuple, pos2 : tuple)-> int:
     return abs(pos1[0]-pos2[0])+abs(pos1[1]-pos2[1])
@@ -48,7 +50,7 @@ def heuristic(state: GameState, player_index: int) -> float:
         closest_rival_snake = 0
 
     w_of_walls = 0.5
-    w_of_fruits = 2
+    w_of_fruits = 1
     w_of_rival = 2
     w_of_len = 30
 
@@ -139,27 +141,14 @@ class MinimaxAgent(Player):
 
     def get_action(self, state: GameState) -> GameAction:
         # check all 3 possible moves of the player
-        '''
-        left = MinimaxAgent.TurnBasedGameState(state, GameAction.LEFT)
-        res_left = self.RB_minimax(left,2)
-        straight = MinimaxAgent.TurnBasedGameState(state, GameAction.STRAIGHT)
-        res_straight = self.RB_minimax(straight, 2)
-        right = MinimaxAgent.TurnBasedGameState(state, GameAction.RIGHT)
-        res_right = self.RB_minimax(right, 2)
-
-        # return the best move (highest minimax result) out if the three
-        if res_left > res_right and res_left > res_straight:
-            return GameAction.LEFT
-        elif res_straight > res_right:
-            return GameAction.STRAIGHT
-        else:
-            return GameAction.RIGHT
-
-            '''
+        start_time = time.time()
         depth = 2
         start_state = MinimaxAgent.TurnBasedGameState(state, None)
         result_sum, result_action = self.RB_minimax(start_state, depth)
         assert result_action is not None
+
+        end_time = time.time()
+        times.append(end_time-start_time)
         return result_action
 
 
