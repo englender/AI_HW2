@@ -177,10 +177,8 @@ class AlphaBetaAgent(MinimaxAgent):
 def init_list_of_states():
     init_state = []
     for i in range(50):
-        if i % 2 == 0:
-            init_state.append(GameAction.LEFT)
-        else: init_state.append(GameAction.RIGHT)
-
+        init_state.append(GameAction.STRAIGHT)
+        
     return init_state
 
 
@@ -216,6 +214,7 @@ def SAHC_sideways():
             rand_ans = np.random.choice(range(len(best_states)))
             current[i] = (best_states[rand_ans])[i]
 
+    print(current)
     return current
 
 
