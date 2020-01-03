@@ -28,7 +28,10 @@ def heuristic(state: GameState, player_index: int) -> float:
     distance_from_closest_walls = min(state.board_size[0]-head_position[0],head_position[0]) \
                                   + min(state.board_size[1]-head_position[1],head_position[1])
 
-    distance_from_closest_fruit = min([dist_manhattan(fruit, head_position) for fruit in state.fruits_locations])
+    if len(state.fruits_locations) > 0:
+        distance_from_closest_fruit = min([dist_manhattan(fruit, head_position) for fruit in state.fruits_locations])
+    else:
+        distance_from_closest_fruit = 0
 
     closest_rival_snake = state.board_size[0]+state.board_size[1]
 
