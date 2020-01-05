@@ -257,7 +257,7 @@ class TournamentAgent(Player):
 
     def get_action(self, state: GameState) -> GameAction:
         # according to the dry section we chose AlphaBeta agent with depth = 3
-        depth = 3
+        depth = 2
         start_state = MinimaxAgent.TurnBasedGameState(state, None)
         result_sum, result_action = self.RB_minimax(start_state, depth, True)
         return result_action
